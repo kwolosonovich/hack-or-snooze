@@ -15,6 +15,7 @@ class StoryList {
     const stories = response.data.stories.map(story => new Story(story));
     // build an instance of our own class using the new array of stories
     const storyList = new StoryList(stories);
+    verifyStories()
     return storyList;
   }
 
@@ -151,11 +152,8 @@ class User {
     this.name = response.data.user.name;
     this.createdAt = response.data.user.createdAt;
     this.updatedAt = response.data.user.updatedAt;
-
-    // remember to convert the user's favorites and ownStories into instances of Story
     this.favorites = response.data.user.favorites.map((s) => new Story(s));
     this.ownStories = response.data.user.stories.map((s) => new Story(s));
-
     return this;
   }
 
