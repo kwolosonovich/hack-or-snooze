@@ -59,7 +59,6 @@ $(async function () {
     let name = $("#create-account-name").val(); // variables from form
     let username = $("#create-account-username").val();
     let password = $("#create-account-password").val();
-
     // call the create method, which calls the API and then builds a new user instance
     const newUser = await User.create(username, password, name);
     currentUser = newUser; // sets global variable
@@ -73,10 +72,37 @@ $(async function () {
     let title = $("#story-title").val();
     let url = $("#story-url").val();
     let username = currentUser.username;
-    addStoryAPI(author, title, url, username);
+    addNewStoryFromForm(author, title, url, username);
   })
 
-  async function addStoryAPI(author, title, url, username) {
+  // add event listener to favorites start - to make as favorite story
+  $(".articles-container").on("click", ".star", async function (evt) {
+    if (currentUser) {
+      const $tgt = $(evt.target);
+      const $closestLi = $tgt.closest("li");
+      const storyId = $closestLi.attr("id");
+      if ($tgt.hasClass("fas")) {
+        await currentUser.removeFavorite(storyId);
+        $tgt.closest("i").toggleClass("fas far");
+      } else {
+        await currentUser.addFavorite(storyId);
+        $tgt.closest("i").toggleClass("fas far");
+      }
+    }
+  });
+
+  //Event Handler for Deleting a Single Story using the story ID 
+  $ownStories.on("click", ".trash-can", async function (evt) {
+    const $closestLi = $(evt.target).closest("li");
+    const storyId = $closestLi.attr("id");
+    await storyList.removeStory(currentUser, storyId);   // remove the story from the API       
+    await generateStories();  // re-generate the story list
+    hideElements();
+    $allStoriesList.show(); //show story list
+  });
+
+  // generate new story 
+  async function addNewStoryFromForm(author, title, url, username) {
     const story = await storyList.addStory(currentUser, {
       title,
       author,
@@ -90,37 +116,6 @@ $(async function () {
       $submitForm.trigger("reset");
     }
   }
-
-  // add event listener to favorites start - to make as favorite story
-  $(".articles-container").on("click", ".star", async function (evt) {
-    if (currentUser) {
-      const $tgt = $(evt.target);
-      const $closestLi = $tgt.closest("li");
-      const storyId = $closestLi.attr("id");
-      // if the item is already favorited
-      if ($tgt.hasClass("fas")) {
-        // remove the favorite from the user's list
-        await currentUser.removeFavorite(storyId);
-        // then change the class to be an empty star
-        $tgt.closest("i").toggleClass("fas far");
-      } else {
-        // the item is un-favorited
-        await currentUser.addFavorite(storyId);
-        $tgt.closest("i").toggleClass("fas far");
-      }
-    }
-  });
-
-  //Event Handler for Deleting a Single Story
-  $ownStories.on("click", ".trash-can", async function (evt) {
-    // get the Story's ID
-    const $closestLi = $(evt.target).closest("li");
-    const storyId = $closestLi.attr("id");
-    await storyList.removeStory(currentUser, storyId);   // remove the story from the API       
-    await generateStories();  // re-generate the story list
-    hideElements();
-    $allStoriesList.show(); //show story list
-  });
 
   // On page load, checks local storage to see if the user is already logged in.
   async function checkIfLoggedIn() {
@@ -209,15 +204,11 @@ $(async function () {
 
   // A rendering function to build the favorites list
   function generateFaves() {
-    // empty out the list by default
     $favoritedStories.empty();
-    // if the user has no favorites
     if (currentUser.favorites.length === 0) {
       $favoritedStories.append("<h5>No favorites added!</h5>");
     } else {
-      // for all of the user's favorites
       for (let story of currentUser.favorites) {
-        // render each story in the list
         let favoriteHTML = generateStoryHTML(story, false, true);
         $favoritedStories.append(favoriteHTML);
       }
