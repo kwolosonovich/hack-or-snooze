@@ -28,7 +28,8 @@ a {
 }
 
 a:hover {
-  text-decoration: underline;
+  color: white;
+  font-weight: bold;
 }
 
 
@@ -44,16 +45,17 @@ nav {
   color: #194769;
   align-items: center;
   padding: 5px 20px;
+  border-bottom: 2px solid #194769;
   border-radius: 3px 3px 0 0;
 }
 
 .main-nav-links {
-  margin: 0 15px;
+  margin: 5px 15px;
 }
 
 .nav-link {
   font-size: 1 rem;
-  margin: 0 3px;
+  margin: 10px 15px;
 }
 
 .nav-right {
@@ -114,7 +116,7 @@ form > button {
 }
 
 form > button:hover {
-  background-color: #f2855e;;
+  background-color: #f2855e;
 }
 
 form > hr {
@@ -157,16 +159,18 @@ form > hr {
 }
 
 .trash-can:hover {
-  color: #f2855e;;
+  color: #f2855e;
+  font-weight: bold;
 }
 
 .pencil:hover {
   color: #194769;
+  font-weight: bold;
 }
 
 .article-link > strong {
   color: black;
-  font-size: 0.85rem;
+  font-size: 0.90rem;
   font-weight: normal;
   margin: 18px 0;
 }
@@ -174,10 +178,12 @@ form > hr {
 .article-link:hover {
   text-decoration: none;
   color: #194769;
+  font-weight: bold;
 }
 
 .article-hostname:hover {
   text-decoration: underline;
+  font-weight: bold;
 }
 
 .article-author {
