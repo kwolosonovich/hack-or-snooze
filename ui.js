@@ -1,5 +1,4 @@
 $(async function () {
-  console.log("async function called")
   // cache some selectors we'll be using quite a bit
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
@@ -23,7 +22,6 @@ $(async function () {
   // navbar event listeners
   $navbar.on('click', async function (e) {
     e.preventDefault()
-    console.log(e.target.id)
     hideElements();
     if (e.target.id === "nav-all") {
       await generateStories();
@@ -44,7 +42,6 @@ $(async function () {
       location.reload();
     }
   })
-
 
   // Event listener for logging in - If successfully we will setup the user instance
   $loginForm.on("submit", async function (evt) {
@@ -70,26 +67,29 @@ $(async function () {
   });
 
   // add event listener to submit and get form input values
-  $submitForm.on("submit", async function (e) {
+  $submitForm.on("submit", function (e) {
     e.preventDefault();
     let author = $("#story-author").val();
     let title = $("#story-title").val();
     let url = $("#story-url").val();
-    const hostName = getHostName(url);
     let username = currentUser.username;
+    addStoryAPI(author, title, url, username);
+  })
 
+  async function addStoryAPI(author, title, url, username) {
     const story = await storyList.addStory(currentUser, {
       title,
       author,
       url,
-      username
+      username,
     });
-
-    newStoryLi = generateStoryHTML(story, false);
-    $allStoriesList.prepend(newStoryLi);
-    $submitForm.slideUp("slow");
-    $submitForm.trigger("reset");
-  })
+    if (verifyStory(story)) {
+      newStoryLi = generateStoryHTML(story, false);
+      $allStoriesList.prepend(newStoryLi);
+      $submitForm.slideUp("slow");
+      $submitForm.trigger("reset");
+    }
+  }
 
   // add event listener to favorites start - to make as favorite story
   $(".articles-container").on("click", ".star", async function (evt) {
@@ -110,7 +110,6 @@ $(async function () {
       }
     }
   });
-
 
   //Event Handler for Deleting a Single Story
   $ownStories.on("click", ".trash-can", async function (evt) {
@@ -165,8 +164,6 @@ $(async function () {
     storyList = storyListInstance;      // update global variable
     $allStoriesList.empty();    // remove stories
 
-          console.log(Object.keys(storyList.stories).length);
-
     for (let story of storyList.stories) {
       if (verifyStory(story)) {
         const result = generateStoryHTML(story);
@@ -178,8 +175,9 @@ $(async function () {
   function verifyStory(story) {
     for (item in story) {
       if (story[item] === undefined || story[item] === null) {
-        alert('ERROR, please refresh page to see the most updated stories. GET request error')
-        break
+        alert('ERROR, please refresh page to see the most updated stories')
+        console.log('Verify story error')
+        continue
       }
     } 
     return true

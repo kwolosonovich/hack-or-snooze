@@ -15,7 +15,6 @@ class StoryList {
     const stories = response.data.stories.map(story => new Story(story));
     // build an instance of our own class using the new array of stories
     const storyList = new StoryList(stories);
-    verifyStories()
     return storyList;
   }
 
@@ -69,12 +68,10 @@ class User {
     this.loginToken = "";
     this.favorites = [];
     this.ownStories = [];
-    console.log("User created");
   }
 
   // create a new user by generating POST request to API 
   static async create(username, password, name) {
-    console.log("create");
     const response = await axios.post(`${BASE_URL}/signup`, {
       user: {
         username,
@@ -93,7 +90,6 @@ class User {
 
   // log in user using username and password - create a user instance
   static async login(username, password) {
-    console.log("login");
     const response = await axios.post(`${BASE_URL}/login`, {
       user: {
         username,
